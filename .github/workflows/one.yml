@@ -14,10 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v6
+      - name: Cache somefile.txt
+        id: cache-somefile
+        uses: actions/cache@v4
         with:
-          python-version: '3.12' 
+          path: somefile.txt
+          key: somefile-${{ runner.os }}-v1
+
+      - name: Create somefile.txt if cache miss
+        if: steps.cache-somefile.outputs.cache-hit != 'true'
+        run: |
+          date > somefile.txt
+
+      - name: Show contents of somefile.txt
+        run: cat somefile.txt
 
       - name: Run a one-line script
-        run: python -c "print('Hello world!')"
-
+        run: echo "Hello world!"
